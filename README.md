@@ -38,7 +38,7 @@ npx hardhat run scripts/demo.js
 Known limitations: a dispute that the regulator never resolves would freeze the season (a timeout is not implemented); the prototype uses a native test coin, not a stablecoin; data providers are trusted roles.
 
 ## Demo video
-<paste the link here>
+(https://drive.google.com/drive/folders/1hv63BJY2gKPwLQdKE24cQ_DrwHb2VE4v?usp=drive_link)
 
 ## Credits and AI use
 Built with OpenZeppelin Contracts (MIT licence).
