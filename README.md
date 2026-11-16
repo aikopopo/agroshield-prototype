@@ -1,35 +1,45 @@
 Educational project for the course Introduction to Finance. Not a real product, service or investment offer. Do not use with real funds.
 
 # AgroShield PolicyPool prototype
-(the rest is filled in at Step 12)
 
 ## What it does
-PolicyPool is a smart contract for rainfall-index crop insurance. An insurer funds a pool,
-farmers buy policies, two independent data providers report rainfall after the season, and if
-rainfall is below the threshold every policyholder is paid automatically. A dispute mechanism
-freezes payouts when the readings disagree.
+PolicyPool is a smart contract for rainfall-index (parametric) crop insurance. An insurer funds a pool, farmers buy policies, two independent data providers report season rainfall, and if the recorded rainfall is below the threshold every policyholder is paid automatically. If the two readings disagree, or someone disputes a result, the payout is frozen until the regulator decides.
+
+The prototype runs only on the local Hardhat network with test accounts. Money in the demo is the local test coin.
 
 ## How to run
-1. Install Node.js (LTS) and run `npm install`
-2. `npx hardhat compile`
-3. `npx hardhat test` (13 tests)
-4. Demo: `npx hardhat node` in one terminal, then `npx hardhat run scripts/demo.js --network localhost`
+Requirements: Node.js 22 (LTS).
 
-Runs only on the local Hardhat network with test accounts.
+```bash
+npm install
+npx hardhat compile
+npx hardhat test
+npx hardhat run scripts/demo.js
+```
+
+`npx hardhat test` runs 13 unit tests. `scripts/demo.js` runs the full scenario: deploy, grant roles, create a template, fund the pool, buy two policies, report rainfall, pay out, close the season.
 
 ## Roles
-- Admin: grants roles only
-- Insurer: creates templates, funds the pool, closes the season
-- Data provider: submits rainfall readings (two different providers are required)
-- Regulator: resolves disputes
+| Role | What it can do |
+|---|---|
+| Admin | Grants and revokes roles only. Cannot move funds or change results |
+| Insurer | Creates templates, funds the pool, closes the season |
+| Data provider | Submits rainfall readings (two different providers are required) |
+| Regulator | Resolves disputes |
+| Farmer (anyone) | Buys a policy, can call the payout evaluation |
 
 ## Security
-Reentrancy (nonReentrant and checks-effects-interactions), access control (roles),
-payout cannot be repeated, pool must cover every policy sold.
+- Reentrancy: `nonReentrant` guard and checks-effects-interactions (state is updated before money is sent). A test with a malicious contract checks this.
+- Access control: role-based permissions (OpenZeppelin AccessControl), tested.
+- Solvency: a policy can only be sold if the pool covers all payouts.
+- No double payout: a season can be evaluated only once.
+- A receiver that rejects a payment cannot block the others (pull-payment fallback).
+
+Known limitations: a dispute that the regulator never resolves would freeze the season (a timeout is not implemented); the prototype uses a native test coin, not a stablecoin; data providers are trusted roles.
 
 ## Demo video
 <paste the link here>
 
 ## Credits and AI use
-Built with OpenZeppelin Contracts (MIT licence). <write here exactly which parts of the code were
-written with AI help and which AI tool and model was used>
+Built with OpenZeppelin Contracts (MIT licence).
+<write here exactly which parts were written with AI help, which tool and model, and what the team reviewed and changed>
